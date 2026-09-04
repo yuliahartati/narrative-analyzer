@@ -29,14 +29,14 @@ USER_PROMPT_TEMPLATE = """
 Analyze the following text and return ONLY valid JSON.
 Schema:
 
-{
+{{
   "facts": [],
   "claims": [],
   "opinions": [],
   "emotional_language": [],
   "missing_context": [],
   "verification_questions": []
-}
+}}
 
 Rules:
 
