@@ -4,7 +4,7 @@ import streamlit as st
 from openai import OpenAI
 
 st.set_page_config(
-    page_title="Narrative Analyzer",
+    page_title="🧠 Narrative Analyzer",
     page_icon="🧠",
     layout="wide"
 )
@@ -27,7 +27,7 @@ text = st.text_area(
     height=300,
 )
 
-if st.button("Analyze"):
+if st.button("🚀 Analyze", use_container_width=True):
 
     if not text.strip():
         st.warning("Please enter some text.")
@@ -54,14 +54,19 @@ Text:
 {text}
 """
 
-    with st.spinner("Analyzing..."):
+    progress = st.progress(0)
+
+    with st.spinner("🧠 AI is analyzing the narrative..."):
+
+        progress.progress(30)
 
         response = client.chat.completions.create(
             model="gpt-5-mini",
+            response_format={"type": "json_object"},
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an expert narrative analyst."
+                    "content": "You are an expert narrative analyst. Always return valid JSON only."
                 },
                 {
                     "role": "user",
@@ -70,26 +75,57 @@ Text:
             ]
         )
 
+        progress.progress(80)
+
     try:
+
         result = json.loads(response.choices[0].message.content)
 
-        st.subheader("Facts")
-        st.write(result["facts"])
+        progress.progress(100)
 
-        st.subheader("Claims")
-        st.write(result["claims"])
+        st.success("✅ Analysis completed!")
 
-        st.subheader("Opinions")
-        st.write(result["opinions"])
+        markdown_report = "# Narrative Analysis Report\n\n"
 
-        st.subheader("Emotional Language")
-        st.write(result["emotional_language"])
+        sections = [
+            ("📌 Facts", "facts"),
+            ("📢 Claims", "claims"),
+            ("💭 Opinions", "opinions"),
+            ("❤️ Emotional Language", "emotional_language"),
+            ("⚠️ Missing Context", "missing_context"),
+            ("🔍 Questions for Further Verification", "verification_questions"),
+        ]
 
-        st.subheader("Missing Context")
-        st.write(result["missing_context"])
+        for title, key in sections:
 
-        st.subheader("Questions for Further Verification")
-        st.write(result["verification_questions"])
+            items = result.get(key, [])
+
+            markdown_report += f"## {title}\n"
+
+            with st.expander(f"{title} ({len(items)})", expanded=True):
+
+                if items:
+
+                    for item in items:
+                        st.markdown(f"- {item}")
+                        markdown_report += f"- {item}\n"
+
+                else:
+                    st.caption("No items found.")
+                    markdown_report += "No items found.\n"
+
+            markdown_report += "\n"
+
+        st.download_button(
+            "📄 Download Markdown Report",
+            markdown_report,
+            file_name="narrative_analysis_report.md",
+            mime="text/markdown",
+            use_container_width=True,
+        )
+
+        with st.expander("📄 Original Text"):
+            st.text(text)
 
     except Exception:
 
