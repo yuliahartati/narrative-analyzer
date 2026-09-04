@@ -31,7 +31,7 @@ text = st.text_area(
     height=300,
 )
 
-if st.button("🚀 Analyze", use_container_width=True)
+if st.button("🚀 Analyze", use_container_width=True):
 
     if not text.strip()
         st.warning("Please enter some text.")
