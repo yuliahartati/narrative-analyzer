@@ -2,6 +2,7 @@ import os
 import json
 import streamlit as st
 from openai import OpenAI
+from prompts.analyzer_prompt import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
 
 st.set_page_config(
     page_title="🧠 Narrative Analyzer",
@@ -33,7 +34,7 @@ if st.button("🚀 Analyze", use_container_width=True):
         st.warning("Please enter some text.")
         st.stop()
 
-    prompt = f"""
+    prompt = USER_PROMPT_TEMPLATE.format(text=text)
 Analyze the following text.
 
 Return ONLY valid JSON.
@@ -65,9 +66,9 @@ Text:
             response_format={"type": "json_object"},
             messages=[
                 {
-                    "role": "system",
-                    "content": "You are an expert narrative analyst. Always return valid JSON only."
-                },
+    "role": "system",
+    "content": SYSTEM_PROMPT
+},
                 {
                     "role": "user",
                     "content": prompt
