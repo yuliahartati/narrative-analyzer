@@ -67,8 +67,7 @@ Text:
                     "role": "user",
                     "content": prompt
                 }
-            ],
-            temperature=0
+            ]
         )
 
     try:
