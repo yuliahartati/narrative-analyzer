@@ -108,11 +108,11 @@ if st.button("🚀 Analyze", use_container_width=True):
             file_name="narrative_analysis_report.md",
             mime="text/markdown",
             use_container_width=True,
-        )
             file_name="narrative_analysis_report.md",
             mime="text/markdown",
             use_container_width=True,
-
+        )
+            
         with st.expander("📄 Original Text"):
             st.text(text)
 
