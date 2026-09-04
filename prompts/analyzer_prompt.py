@@ -37,7 +37,6 @@ Schema:
   "missing_context": [],
   "verification_questions": []
 }}
-
 Rules:
 
 - Facts are objectively stated information.
