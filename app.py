@@ -60,7 +60,6 @@ if st.button("🚀 Analyze", use_container_width=True):
         progress.progress(80)
 
     try:
-
         result = json.loads(response.choices[0].message.content)
 
         progress.progress(100)
@@ -87,7 +86,6 @@ if st.button("🚀 Analyze", use_container_width=True):
             with st.expander(f"{title} ({len(items)})", expanded=True):
 
                 if items:
-
                     for item in items:
                         st.markdown(f"- {item}")
                         markdown_report += f"- {item}\n"
@@ -105,6 +103,13 @@ if st.button("🚀 Analyze", use_container_width=True):
             mime="text/markdown",
             use_container_width=True,
         )
+
+        with st.expander("📄 Original Text"):
+            st.text(text)
+
+    except Exception:
+        st.error("Model did not return valid JSON.")
+        st.code(response.choices[0].message.content)        )
 
         with st.expander("📄 Original Text"):
             st.text(text)
