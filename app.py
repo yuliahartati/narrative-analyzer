@@ -119,5 +119,4 @@ if st.button("🚀 Analyze", use_container_width=True):
     except Exception:
 
         st.error("Model did not return valid JSON.")
-
         st.code(response.choices[0].message.content)
