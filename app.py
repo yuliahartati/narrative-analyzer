@@ -31,9 +31,9 @@ text = st.text_area(
     height=300,
 )
 
-if st.button("🚀 Analyze", use_container_width=True):
+if st.button("🚀 Analyze", use_container_width=True)
 
-    if not text.strip():
+    if not text.strip()
         st.warning("Please enter some text.")
         st.stop()
 
@@ -41,7 +41,7 @@ if st.button("🚀 Analyze", use_container_width=True):
 
     progress = st.progress(0)
 
-    with st.spinner("🧠 AI is analyzing the narrative...")
+    with st.spinner("🧠 AI is analyzing the narrative..."):
 
         progress.progress(30)
 
