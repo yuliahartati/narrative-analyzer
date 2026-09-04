@@ -109,15 +109,6 @@ if st.button("🚀 Analyze", use_container_width=True):
             mime="text/markdown",
             use_container_width=True,
         )
-
-        with st.expander("📄 Original Text"):
-            st.text(text)
-
-    except Exception:
-
-        st.error("Model did not return valid JSON.")
-
-        st.code(response.choices[0].message.content)            markdown_report,
             file_name="narrative_analysis_report.md",
             mime="text/markdown",
             use_container_width=True,
