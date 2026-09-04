@@ -1,13 +1,13 @@
-import os
 import json
 import streamlit as st
 from openai import OpenAI
+
 from prompts.analyzer_prompt import SYSTEM_PROMPT, USER_PROMPT_TEMPLATE
 
 st.set_page_config(
     page_title="🧠 Narrative Analyzer",
     page_icon="🧠",
-    layout="wide"
+    layout="wide",
 )
 
 st.title("🧠 Narrative Analyzer")
@@ -15,7 +15,7 @@ st.write(
     "Analyze articles, posts, or opinions and separate facts, claims, opinions, emotional language, missing context, and verification questions."
 )
 
-api_key = st.secrets.get("OPENAI_API_KEY", None)
+api_key = st.secrets.get("OPENAI_API_KEY")
 
 if not api_key:
     st.error("OPENAI_API_KEY not found in Streamlit Secrets.")
@@ -35,25 +35,6 @@ if st.button("🚀 Analyze", use_container_width=True):
         st.stop()
 
     prompt = USER_PROMPT_TEMPLATE.format(text=text)
-Analyze the following text.
-
-Return ONLY valid JSON.
-
-Schema:
-
-{{
-"facts": [],
-"claims": [],
-"opinions": [],
-"emotional_language": [],
-"missing_context": [],
-"verification_questions": []
-}}
-
-Text:
-
-{text}
-"""
 
     progress = st.progress(0)
 
@@ -66,14 +47,14 @@ Text:
             response_format={"type": "json_object"},
             messages=[
                 {
-    "role": "system",
-    "content": SYSTEM_PROMPT
-},
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
                 {
                     "role": "user",
-                    "content": prompt
-                }
-            ]
+                    "content": prompt,
+                },
+            ],
         )
 
         progress.progress(80)
@@ -105,6 +86,34 @@ Text:
 
             with st.expander(f"{title} ({len(items)})", expanded=True):
 
+                if items:
+
+                    for item in items:
+                        st.markdown(f"- {item}")
+                        markdown_report += f"- {item}\n"
+
+                else:
+                    st.caption("No items found.")
+                    markdown_report += "No items found.\n"
+
+            markdown_report += "\n"
+
+        st.download_button(
+            "📄 Download Markdown Report",
+            markdown_report,
+            file_name="narrative_analysis_report.md",
+            mime="text/markdown",
+            use_container_width=True,
+        )
+
+        with st.expander("📄 Original Text"):
+            st.text(text)
+
+    except Exception:
+
+        st.error("Model did not return valid JSON.")
+
+        st.code(response.choices[0].message.content)
                 if items:
 
                     for item in items:
