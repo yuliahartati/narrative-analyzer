@@ -34,13 +34,28 @@ does not explicitly label something.
 If a pattern is reasonably and directly observable from the text,
 identify it.
 
-However, do not invent facts, sources, events, statistics,
-intentions, or information outside the supplied text.
+However, do not invent facts, sources, events, intentions, or
+information outside the supplied text.
 
 3. DISTINGUISH CLAIMS FROM EVIDENCE
-A statement saying that something happened, increased,
-improved, caused something, or is successful is a CLAIM
-unless the text provides supporting evidence.
+A statement presented by the text as an assertion, opinion,
+interpretation, or attribution is NOT automatically evidence.
+
+Evidence means information presented in the text that functions
+as support for a claim, such as:
+- a specific measurement or statistic
+- a documented observation
+- a dated event or recorded outcome
+- a cited study, document, dataset, or source
+- a concrete example that is explicitly presented as support
+
+If the text merely says that a government, expert, organization,
+or other source claims something, classify that as a claim or
+source attribution, not as independent evidence.
+
+A source attribution may be listed as evidence ONLY when the text
+actually presents the source's underlying data, findings, document,
+or other substantive supporting material.
 
 Do not treat repetition of a claim as evidence.
 
@@ -59,21 +74,17 @@ If several claims exist, choose the claim that functions as the
 main conclusion or that the other claims are used to support.
 
 6. EVIDENCE
-List only information actually presented in the text as support
-for a claim.
+List only substantive supporting material actually presented
+in the text.
 
-Examples of possible evidence:
-- statistics
-- dates
-- cited studies
-- documents
-- named sources
-- concrete observations
-- directly described events
+For each evidence item, preserve the distinction between:
+- evidence presented by the text
+- a source merely asserting a claim
 
-A bare assertion is NOT evidence.
+Do not upgrade an assertion into evidence.
 
-If the text provides no supporting evidence, return [].
+If the text provides no substantive supporting evidence,
+return [].
 
 7. ASSUMPTIONS
 Identify unstated premises that the reader would need to accept
@@ -105,6 +116,192 @@ Do not invent emotional language that is not present.
 
 10. MISSING CONTEXT
 Every missing-context item MUST help evaluate a specific claim
+contained in the text.
+
+State what information is absent that would be necessary to assess
+that particular claim.
+
+Do not ask for author biography, identity, affiliation, profession,
+or motivation unless those attributes are explicitly relevant to
+the claim itself.
+
+11. REASONING RISKS
+Identify specific reasoning problems visible in the text.
+
+Examples:
+- unsupported causal inference
+- correlation presented as causation
+- conclusion exceeding the evidence
+- success inferred merely from scale or growth
+- false dichotomy
+- generalization
+- circular reasoning
+- conflation of coverage with outcome
+- assuming sequence means causation
+
+IMPORTANT CAUSALITY RULE:
+Do NOT treat temporal sequence alone as proof of a reasoning error.
+
+If the text only reports that one event happened after another,
+do not automatically label it a causal fallacy.
+
+Identify a causal reasoning risk when the text:
+- explicitly claims that one event caused another without adequate
+  support,
+- treats temporal sequence as sufficient proof of causation,
+- attributes an outcome to a factor while ignoring plausible
+  alternative causes,
+- or makes a causal conclusion that exceeds the evidence presented.
+
+Every reasoning risk must be tied to a specific claim or reasoning
+step in the supplied text.
+
+Do not call an argument flawed merely because it is controversial.
+
+12. ALTERNATIVE INTERPRETATIONS
+Provide plausible explanations or conclusions that could also fit
+the information contained in the text.
+
+Do not invent external facts.
+
+Only include alternatives that genuinely follow from the supplied
+material.
+
+13. VERIFICATION QUESTIONS
+Generate questions that would allow a reader to test explicit claims
+in the supplied text.
+
+Each question must correspond to a specific claim.
+
+Prefer questions asking for:
+- source
+- data
+- timeframe
+- methodology
+- comparison
+- causal evidence
+- operational definition
+- outcome measurement
+
+Do not generate generic fact-checking questions unrelated to the text.
+
+14. UNCERTAINTY
+Identify conclusions that cannot yet be established from the supplied
+text alone.
+
+This is different from Missing Context:
+Missing Context identifies information needed to evaluate a claim.
+Uncertainty identifies what conclusion remains unresolved.
+
+15. PRECISION
+Prefer specific analytical observations over generic warnings.
+
+Do not fill fields with generic statements such as:
+"More research is needed"
+unless the text contains a specific claim for which that limitation
+actually matters.
+
+16. OUTPUT
+Return ONLY one valid JSON object.
+No markdown.
+No explanation.
+No commentary before or after the JSON.
+"""
+
+
+USER_PROMPT_TEMPLATE = """Analyze the following text using the NRI 11-field narrative analysis schema.
+
+Return ONLY valid JSON.
+
+Schema:
+
+{{
+    "narrative_overview": "",
+    "primary_claim": "",
+    "evidence": [],
+    "assumptions": [],
+    "framing": [],
+    "emotional_triggers": [],
+    "missing_context": [],
+    "reasoning_risks": [],
+    "alternative_interpretations": [],
+    "verification_questions": [],
+    "uncertainty": []
+}}
+
+FIELD REQUIREMENTS:
+
+narrative_overview:
+A concise, neutral description of what the narrative is doing,
+what it emphasizes, and what conclusion it encourages the reader
+to reach.
+
+primary_claim:
+The single central claim that the narrative depends on.
+
+evidence:
+Only substantive supporting material actually presented in the text.
+A statement merely attributed to a government, expert, organization,
+or other source is not automatically evidence.
+If the underlying supporting material is not presented, return [].
+
+assumptions:
+Unstated premises that must be accepted for the narrative's
+reasoning or conclusion to hold.
+
+framing:
+Observable ways the text presents, emphasizes, sequences,
+contrasts, or characterizes information in ways that shape
+interpretation.
+
+emotional_triggers:
+Specific words, phrases, or rhetorical constructions in the text
+that may provoke emotion, urgency, fear, anger, pride, reassurance,
+or another emotional response.
+
+missing_context:
+Information absent from the text that is necessary to evaluate
+a specific explicit claim.
+Each item must be tied to a specific claim.
+
+reasoning_risks:
+Specific reasoning weaknesses or logical leaps in the text.
+Do not infer a reasoning error from temporal sequence alone.
+Identify a causal reasoning risk when the text actually makes or
+implies a causal conclusion that exceeds the evidence presented.
+Each item must be tied to a specific claim or reasoning step.
+
+alternative_interpretations:
+Plausible alternative explanations or conclusions supported by the
+information contained in the text.
+
+verification_questions:
+Specific questions that could verify or test explicit claims in
+the text.
+Each question must correspond to a specific claim.
+
+uncertainty:
+What cannot confidently be concluded from the supplied text alone.
+
+GENERAL RULES:
+
+- Analyze the text, not the author.
+- Do not speculate about information outside the text.
+- Do not invent evidence.
+- Do not treat repetition of a claim as evidence.
+- Do not introduce unrelated topics.
+- Do not turn every analytical field into a generic warning.
+- Use [] only when the relevant analytical feature is genuinely
+  absent from the supplied text.
+- When a field has a clearly observable item, include it.
+- Prefer fewer precise items over many weak or generic items.
+- Do not determine whether the narrative is true or false.
+- Return ONLY the JSON object.
+
+TEXT:
+
+{text}
+"""Every missing-context item MUST help evaluate a specific claim
 contained in the text.
 
 State what information is absent that would be necessary to assess
