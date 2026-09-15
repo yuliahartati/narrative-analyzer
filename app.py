@@ -58,18 +58,27 @@ client = OpenAI(api_key=api_key)
 # INPUT
 # =========================================================
 
-st.subheader("1. Input Text")
+st.subheader("1. Input")
 
-uploaded_file = st.file_uploader(
-    "📎 Upload a file",
+uploaded_files = st.file_uploader(
+    "📎 Upload one or more files",
     type=["txt", "docx", "pdf"],
+    accept_multiple_files=True,
     help="Supported formats: TXT, DOCX, PDF"
 )
 
-if uploaded_file is not None:
+if uploaded_files:
+
     st.success(
-        f"📎 File ready: {uploaded_file.name}"
+        f"📎 {len(uploaded_files)} file(s) ready"
     )
+
+    for uploaded_file in uploaded_files:
+
+        st.caption(
+            f"• {uploaded_file.name}"
+        )
+
 
 text_input = st.text_area(
     "Or paste text here",
@@ -79,7 +88,7 @@ text_input = st.text_area(
 
 
 # =========================================================
-# ANALYZE BUTTON
+# ANALYZE
 # =========================================================
 
 if st.button(
@@ -87,138 +96,201 @@ if st.button(
     use_container_width=True
 ):
 
-    # -----------------------------------------------------
-    # GET INPUT
-    # -----------------------------------------------------
+    combined_text = ""
 
-    text = ""
 
-    # If a file was uploaded, process it ONLY after
-    # the Analyze button is pressed.
-    if uploaded_file is not None:
+    # =====================================================
+    # PROCESS UPLOADED FILES
+    # =====================================================
 
-        file_name = uploaded_file.name.lower()
-        file_bytes = uploaded_file.getvalue()
+    if uploaded_files:
 
-        try:
+        source_blocks = []
 
-            # -------------------------------------------------
-            # TXT
-            # -------------------------------------------------
 
-            if file_name.endswith(".txt"):
+        for index, uploaded_file in enumerate(
+            uploaded_files,
+            start=1
+        ):
 
-                text = file_bytes.decode(
-                    "utf-8",
-                    errors="replace"
+            file_name = uploaded_file.name
+            file_name_lower = file_name.lower()
+
+            file_bytes = uploaded_file.getvalue()
+
+            try:
+
+                # -----------------------------------------
+                # TXT
+                # -----------------------------------------
+
+                if file_name_lower.endswith(".txt"):
+
+                    extracted_text = file_bytes.decode(
+                        "utf-8",
+                        errors="replace"
+                    )
+
+
+                # -----------------------------------------
+                # DOCX
+                # -----------------------------------------
+
+                elif file_name_lower.endswith(".docx"):
+
+                    document = Document(
+                        io.BytesIO(file_bytes)
+                    )
+
+                    paragraphs = []
+
+                    for paragraph in document.paragraphs:
+
+                        if paragraph.text.strip():
+
+                            paragraphs.append(
+                                paragraph.text
+                            )
+
+                    extracted_text = "\n\n".join(
+                        paragraphs
+                    )
+
+
+                # -----------------------------------------
+                # PDF
+                # -----------------------------------------
+
+                elif file_name_lower.endswith(".pdf"):
+
+                    reader = PdfReader(
+                        io.BytesIO(file_bytes)
+                    )
+
+                    pages = []
+
+                    for page in reader.pages:
+
+                        page_text = page.extract_text()
+
+                        if page_text:
+
+                            pages.append(
+                                page_text
+                            )
+
+                    extracted_text = "\n\n".join(
+                        pages
+                    )
+
+
+                else:
+
+                    extracted_text = ""
+
+
+            except Exception as e:
+
+                st.error(
+                    f"Could not read {file_name}: {e}"
                 )
 
+                st.stop()
 
-            # -------------------------------------------------
-            # DOCX
-            # -------------------------------------------------
 
-            elif file_name.endswith(".docx"):
+            # -----------------------------------------
+            # CHECK FILE CONTENT
+            # -----------------------------------------
 
-                document = Document(
-                    io.BytesIO(file_bytes)
+            if not extracted_text.strip():
+
+                st.warning(
+                    f"No readable text found in: {file_name}"
                 )
 
-                paragraphs = []
-
-                for paragraph in document.paragraphs:
-
-                    if paragraph.text.strip():
-
-                        paragraphs.append(
-                            paragraph.text
-                        )
-
-                text = "\n\n".join(
-                    paragraphs
-                )
+                continue
 
 
-            # -------------------------------------------------
-            # PDF
-            # -------------------------------------------------
+            # -----------------------------------------
+            # KEEP SOURCE IDENTITY
+            # -----------------------------------------
 
-            elif file_name.endswith(".pdf"):
-
-                reader = PdfReader(
-                    io.BytesIO(file_bytes)
-                )
-
-                pages = []
-
-                for page in reader.pages:
-
-                    page_text = page.extract_text()
-
-                    if page_text:
-
-                        pages.append(
-                            page_text
-                        )
-
-                text = "\n\n".join(
-                    pages
-                )
-
-
-        except Exception as e:
-
-            st.error(
-                f"Could not read the uploaded file: {e}"
+            source_blocks.append(
+                f"===== SOURCE {index}: {file_name} =====\n\n"
+                f"{extracted_text.strip()}"
             )
 
-            st.stop()
 
+        # ---------------------------------------------
+        # COMBINE ALL FILES
+        # ---------------------------------------------
 
-        # -------------------------------------------------
-        # CHECK EXTRACTED TEXT
-        # -------------------------------------------------
+        if source_blocks:
 
-        if not text.strip():
-
-            st.error(
-                "The uploaded file contains no readable text."
+            combined_text = "\n\n".join(
+                source_blocks
             )
 
-            st.stop()
+
+    # =====================================================
+    # ADD PASTED TEXT
+    # =====================================================
+
+    if text_input.strip():
+
+        if combined_text.strip():
+
+            combined_text += (
+                "\n\n"
+                "===== SOURCE: Pasted Text =====\n\n"
+                f"{text_input.strip()}"
+            )
+
+        else:
+
+            combined_text = text_input.strip()
 
 
-    # -----------------------------------------------------
-    # OTHERWISE USE PASTED TEXT
-    # -----------------------------------------------------
+    # =====================================================
+    # VALIDATE INPUT
+    # =====================================================
 
-    else:
-
-        text = text_input
-
-
-    # -----------------------------------------------------
-    # CHECK INPUT
-    # -----------------------------------------------------
-
-    if not text.strip():
+    if not combined_text.strip():
 
         st.warning(
-            "Please paste some text or upload a file first."
+            "Please paste some text or upload at least one readable file."
         )
 
         st.stop()
 
 
     # =====================================================
-    # ANALYSIS
+    # SHOW INPUT SUMMARY
+    # =====================================================
+
+    if uploaded_files:
+
+        st.info(
+            f"📚 {len(uploaded_files)} uploaded source(s) "
+            "will be analyzed as one combined corpus."
+        )
+
+
+    # =====================================================
+    # BUILD PROMPT
     # =====================================================
 
     prompt = USER_PROMPT_TEMPLATE.format(
-        text=text
+        text=combined_text
     )
 
+
+    # =====================================================
+    # ANALYSIS
+    # =====================================================
+
     progress = st.progress(0)
+
 
     with st.spinner(
         "🧠 AI is analyzing the narrative..."
@@ -374,12 +446,16 @@ if st.button(
     # RENDER RESULTS
     # =====================================================
 
-    markdown_report = "# Narrative Analysis Report\n\n"
+    markdown_report = (
+        "# Narrative Analysis Report\n\n"
+    )
 
 
     for title, key, field_type in fields:
 
-        markdown_report += f"## {title}\n\n"
+        markdown_report += (
+            f"## {title}\n\n"
+        )
 
 
         # -------------------------------------------------
@@ -494,13 +570,13 @@ if st.button(
 
 
     # =====================================================
-    # ORIGINAL TEXT
+    # ORIGINAL COMBINED INPUT
     # =====================================================
 
     with st.expander(
-        "📄 Original Text"
+        "📄 Original Combined Input"
     ):
 
         st.text(
-            text
-    )
+            combined_text
+        )
