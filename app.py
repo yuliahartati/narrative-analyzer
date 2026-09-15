@@ -9,14 +9,22 @@ USER_PROMPT_TEMPLATE,
 )
 
 st.set_page_config(
-page_title="🧠 Narrative Analyzer",
-page_icon="🧠",
-layout="wide",
+    page_title="Narrative Analyzer",
+    page_icon="🧠",
+    layout="wide"
 )
 
 st.title("🧠 Narrative Analyzer")
+
 st.write(
-"Analyze articles, posts, or opinions and separate facts, claims, opinions, emotional language, missing context, and verification questions."
+    "Analyze articles, posts, or opinions to identify narrative structure, "
+    "claims, evidence, assumptions, framing, emotional triggers, missing context, "
+    "reasoning risks, alternative interpretations, verification questions, and uncertainty."
+)
+
+st.caption(
+    "Analytical Assistance — identifies patterns in the supplied material. "
+    "It does not independently establish factual truth unless sources are verified."
 )
 
 api_key = st.secrets.get("OPENAI_API_KEY")
