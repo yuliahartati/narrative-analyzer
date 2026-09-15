@@ -99,6 +99,29 @@ Do not upgrade an assertion into evidence.
 If the text provides no substantive supporting evidence,
 return [].
 
+ATTRIBUTION IS NOT EVIDENCE:
+
+A statement does not become evidence merely because it is attributed to an expert, analyst, official, witness, journalist, media outlet, or other source.
+
+Distinguish carefully between:
+
+- CLAIM: what a person or source asserts.
+- EVIDENCE: data, observations, documents, measurements, or other substantive material presented to support a claim.
+- SOURCE ATTRIBUTION: information about who said or published something.
+
+Examples:
+
+- "Menurut seorang pengamat, kondisi masyarakat semakin buruk."
+  → This is an attributed claim, NOT evidence.
+
+- "Laporan tersebut mencatat kenaikan jumlah keluhan sebesar 35%."
+  → The reported 35% figure may be evidence relevant to the claim, but identify it as reported data rather than independently verified fact.
+
+- "Data resmi menunjukkan angka kemiskinan turun dari 10,2% menjadi 9,4%."
+  → This is reported data/evidence for the change in the measured indicator.
+
+Do not place an attributed opinion, interpretation, prediction, or conclusion in the Evidence field merely because it comes from a named or authoritative source.
+
 7. ASSUMPTIONS
 Identify unstated premises that the reader would need to accept
 for the narrative's conclusion to follow.
