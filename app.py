@@ -22,9 +22,8 @@ st.write(
 api_key = st.secrets.get("OPENAI_API_KEY")
 
 if not api_key:
-st.error("OPENAI_API_KEY not found in Streamlit Secrets.")
-st.stop()
-
+    st.error("OPENAI_API_KEY not found in Streamlit Secrets.")
+    st.stop()
 client = OpenAI(api_key=api_key)
 
 text = st.text_area(
@@ -34,37 +33,27 @@ height=300,
 
 if st.button("🧪 Analyze", use_container_width=True):
 
-if not text.strip():  
-    st.warning("Please enter some text.")  
-    st.stop()  
+    if not text.strip():
+        st.warning("Please enter some text.")
+        st.stop()
 
-prompt = USER_PROMPT_TEMPLATE.format(text=text)  
+    prompt = USER_PROMPT_TEMPLATE.format(text=text)
 
-progress = st.progress(0)  
+    progress = st.progress(0)
 
-with st.spinner("🧠 AI is analyzing the narrative..."):  
+    with st.spinner("🧠 AI is analyzing the narrative..."):
 
-    progress.progress(30)  
+        progress.progress(30)
 
-    response = client.chat.completions.create(  
-        model="gpt-5-mini",  
-        response_format={"type": "json_object"},  
-        messages=[  
-            {  
-                "role": "system",  
-                "content": SYSTEM_PROMPT,  
-            },  
-            {  
-                "role": "user",  
-                "content": prompt,  
-            },  
-        ],  
-    )  
+        response = client.chat.completions.create(
+            ...
+        )
 
-    progress.progress(80)  
+        progress.progress(80)
 
-try:  
-
+    try:
+        ...
+        
     result = json.loads(response.choices[0].message.content)  
 
     progress.progress(100)  
