@@ -46,83 +46,93 @@ if st.button("🧪 Analyze", use_container_width=True):
         progress.progress(30)
 
         response = client.chat.completions.create(
-            ...
+            model="gpt-5-mini",
+            response_format={"type": "json_object"},
+            messages=[
+                {
+                    "role": "system",
+                    "content": SYSTEM_PROMPT,
+                },
+                {
+                    "role": "user",
+                    "content": prompt,
+                },
+            ],
         )
 
         progress.progress(80)
 
     try:
-        ...
-        
-    result = json.loads(response.choices[0].message.content)  
 
-    progress.progress(100)  
+        result = json.loads(response.choices[0].message.content)
 
-    st.success("✅ Analysis completed!")  
+        progress.progress(100)
 
-    markdown_report = "# Narrative Analysis Report\n\n"  
+        st.success("✅ Analysis completed!")
 
-    # NRI 11-field schema (PRODUCT SPEC §26).  
-    # Each entry: (display title, JSON key, field type "text" or "list")  
-    fields = [  
-        ("🧭 Narrative Overview", "narrative_overview", "text"),  
-        ("🎯 Primary Claim", "primary_claim", "text"),  
-        ("📌 Evidence", "evidence", "list"),  
-        ("🧩 Assumptions", "assumptions", "list"),  
-        ("🖼️ Framing", "framing", "list"),  
-        ("⚠️ Emotional Triggers", "emotional_triggers", "list"),  
-        ("🕳️ Missing Context", "missing_context", "list"),  
-        ("⚖️ Reasoning Risks", "reasoning_risks", "list"),  
-        ("🔀 Alternative Interpretations", "alternative_interpretations", "list"),  
-        ("🔍 Verification Questions", "verification_questions", "list"),  
-        ("❓ Uncertainty", "uncertainty", "list"),  
-    ]  
+        markdown_report = "# Narrative Analysis Report\n\n"
 
-    for title, key, field_type in fields:  
+        # NRI 11-field schema (PRODUCT SPEC §26).
+        # Each entry: (display title, JSON key, field type "text" or "list")
+        fields = [
+            ("🧭 Narrative Overview", "narrative_overview", "text"),
+            ("🎯 Primary Claim", "primary_claim", "text"),
+            ("📌 Evidence", "evidence", "list"),
+            ("🧩 Assumptions", "assumptions", "list"),
+            ("🖼️ Framing", "framing", "list"),
+            ("⚠️ Emotional Triggers", "emotional_triggers", "list"),
+            ("🕳️ Missing Context", "missing_context", "list"),
+            ("⚖️ Reasoning Risks", "reasoning_risks", "list"),
+            ("🔀 Alternative Interpretations", "alternative_interpretations", "list"),
+            ("🔍 Verification Questions", "verification_questions", "list"),
+            ("❓ Uncertainty", "uncertainty", "list"),
+        ]
 
-        markdown_report += f"## {title}\n"  
+        for title, key, field_type in fields:
 
-        if field_type == "text":  
+            markdown_report += f"## {title}\n"
 
-            value = (result.get(key) or "").strip()  
+            if field_type == "text":
 
-            with st.expander(title, expanded=True):  
+                value = (result.get(key) or "").strip()
 
-                if value:  
-                    st.markdown(value)  
-                    markdown_report += f"{value}\n"  
-                else:  
-                    st.caption("Not identified.")  
-                    markdown_report += "Not identified.\n"  
+                with st.expander(title, expanded=True):
 
-        else:  
+                    if value:
+                        st.markdown(value)
+                        markdown_report += f"{value}\n"
+                    else:
+                        st.caption("Not identified.")
+                        markdown_report += "Not identified.\n"
 
-            items = result.get(key, [])  
+            else:
 
-            with st.expander(f"{title} ({len(items)})", expanded=True):  
+                items = result.get(key, [])
 
-                if items:  
-                    for item in items:  
-                        st.markdown(f"- {item}")  
-                        markdown_report += f"- {item}\n"  
-                else:  
-                    st.caption("No items found.")  
-                    markdown_report += "No items found.\n"  
+                with st.expander(f"{title} ({len(items)})", expanded=True):
 
-        markdown_report += "\n"  
+                    if items:
+                        for item in items:
+                            st.markdown(f"- {item}")
+                            markdown_report += f"- {item}\n"
+                    else:
+                        st.caption("No items found.")
+                        markdown_report += "No items found.\n"
 
-    st.download_button(  
-        "📥 Download Markdown Report",  
-        markdown_report,  
-        file_name="narrative_analysis_report.md",  
-        mime="text/markdown",  
-        use_container_width=True,  
-    )  
+            markdown_report += "\n"
 
-    with st.expander("📄 Original Text"):  
-        st.text(text)  
+        st.download_button(
+            "📥 Download Markdown Report",
+            markdown_report,
+            file_name="narrative_analysis_report.md",
+            mime="text/markdown",
+            use_container_width=True,
+        )
 
-except Exception:  
+        with st.expander("📄 Original Text"):
+            st.text(text)
 
-    st.error("Model did not return valid JSON.")  
-    st.code(response.choices[0].message.content)            
+    except Exception:
+
+        st.error("Model did not return valid JSON.")
+        st.code(response.choices[0].message.content)
