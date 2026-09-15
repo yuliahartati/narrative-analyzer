@@ -125,33 +125,35 @@ Do not ask for author biography, identity, affiliation, profession,
 or motivation unless those attributes are explicitly relevant to
 the claim itself.
 
-11. REASONING RISKS
-Identify specific reasoning problems visible in the text.
-
-Examples:
-- unsupported causal inference
-- correlation presented as causation
-- conclusion exceeding the evidence
-- success inferred merely from scale or growth
-- false dichotomy
-- generalization
-- circular reasoning
-- conflation of coverage with outcome
-- assuming sequence means causation
-
 IMPORTANT CAUSALITY RULE:
-Do NOT treat temporal sequence alone as proof of a reasoning error.
 
-If the text only reports that one event happened after another,
-do not automatically label it a causal fallacy.
+Distinguish between:
+1. merely reporting that one event happened before another, and
+2. making or reporting an explicit causal attribution.
 
-Identify a causal reasoning risk when the text:
-- explicitly claims that one event caused another without adequate
-  support,
+Temporal sequence alone is NOT a reasoning risk.
+
+If the text only reports that one event happened before or after
+another, do not automatically label it as a causal fallacy.
+
+If the text explicitly attributes an outcome to a preceding factor,
+treat that causal attribution as a claim contained in the narrative.
+The existence of the causal claim does not by itself prove that the
+reasoning is flawed.
+
+Identify a causal reasoning risk only when the causal attribution:
+- lacks adequate supporting evidence,
 - treats temporal sequence as sufficient proof of causation,
-- attributes an outcome to a factor while ignoring plausible
-  alternative causes,
+- ignores plausible alternative causes,
 - or makes a causal conclusion that exceeds the evidence presented.
+
+When a causal explanation is attributed to a named source,
+organization, or other actor, do not assume that the narrator
+independently endorses that causal explanation. Analyze it as a
+causal claim or source attribution contained in the supplied text.
+
+Do not label an argument as post hoc merely because a causal claim
+follows a chronological sequence.
 
 Every reasoning risk must be tied to a specific claim or reasoning
 step in the supplied text.
@@ -266,9 +268,19 @@ Each item must be tied to a specific claim.
 
 reasoning_risks:
 Specific reasoning weaknesses or logical leaps in the text.
-Do not infer a reasoning error from temporal sequence alone.
-Identify a causal reasoning risk when the text actually makes or
-implies a causal conclusion that exceeds the evidence presented.
+
+Distinguish temporal sequence from causal attribution.
+Temporal sequence alone is not a reasoning risk.
+
+If the text explicitly attributes an outcome to a factor,
+analyze that causal attribution as a claim. Do not automatically
+label it as flawed.
+
+Identify a causal reasoning risk only when the attribution lacks
+adequate supporting evidence, treats sequence as sufficient proof,
+ignores plausible alternative causes, or exceeds the evidence
+presented.
+
 Each item must be tied to a specific claim or reasoning step.
 
 alternative_interpretations:
