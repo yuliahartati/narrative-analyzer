@@ -120,21 +120,74 @@ if detected_urls:
 
             response.raise_for_status()
 
-            soup = BeautifulSoup(
-                response.text,
-                "html.parser"
-            )
+            # Clean page structure
+for element in soup(
+    [
+        "script",
+        "style",
+        "noscript",
+        "nav",
+        "header",
+        "footer",
+        "aside",
+        "form"
+    ]
+):
+    element.decompose()
 
-            for element in soup(
-                ["script", "style", "noscript"]
-            ):
-                element.decompose()
+# Try to identify the main article content
+article = soup.find("article")
 
-            extracted_text = soup.get_text(
-                separator="\n",
-                strip=True
-            )
+if not article:
+    article = soup.find("main")
 
+if not article:
+    article = soup.find(
+        "div",
+        class_=lambda value: value and (
+            "detail" in " ".join(value)
+            or "article" in " ".join(value)
+            or "content" in " ".join(value)
+        )
+    )
+
+# Extract paragraph text
+if article:
+    paragraphs = article.find_all("p")
+else:
+    paragraphs = soup.find_all("p")
+
+paragraph_texts = []
+
+for paragraph in paragraphs:
+    text = paragraph.get_text(
+        " ",
+        strip=True
+    )
+
+    if text:
+        paragraph_texts.append(text)
+
+extracted_text = "\n\n".join(
+    paragraph_texts
+)
+
+# Include article title when available
+title = soup.find("h1")
+
+if title:
+    title_text = title.get_text(
+        " ",
+        strip=True
+    )
+
+    if title_text:
+        extracted_text = (
+            title_text
+            + "\n\n"
+            + extracted_text
+        )
+        
             if extracted_text.strip():
                 st.success(
                     f"🌐 Source retrieved — "
