@@ -79,7 +79,6 @@ if uploaded_files:
             f"• {uploaded_file.name}"
         )
 
-
 text_input = st.text_area(
     "Or paste text here",
     height=300,
@@ -87,6 +86,8 @@ text_input = st.text_area(
 )
 
 # Detect URLs in pasted text
+import re
+
 detected_urls = re.findall(
     r'https?://[^\s<>"\']+',
     text_input
@@ -99,7 +100,7 @@ if detected_urls:
 
     for url in detected_urls:
         st.caption(f"• {url}")
-        
+
 # =========================================================
 # ANALYZE
 # =========================================================
@@ -119,7 +120,6 @@ if st.button(
     if uploaded_files:
 
         source_blocks = []
-
 
         for index, uploaded_file in enumerate(
             uploaded_files,
