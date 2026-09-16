@@ -102,7 +102,6 @@ if detected_urls:
 
     for url in detected_urls:
         st.caption(f"• {url}")
-
         
         )
         
