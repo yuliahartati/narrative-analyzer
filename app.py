@@ -89,9 +89,7 @@ text_input = st.text_area(
     placeholder="Paste an article, post, statement, opinion, or other text here..."
 )
 
-# Detect URLs in pasted text
-import re
-
+# Detect and fetch URLs in pasted text
 detected_urls = re.findall(
     r'https?://[^\s<>"\']+',
     text_input
@@ -105,6 +103,60 @@ if detected_urls:
     for url in detected_urls:
         st.caption(f"• {url}")
 
+        try:
+            response = requests.get(
+                url,
+                timeout=15,
+                headers={
+                    "User-Agent": (
+                        "Mozilla/5.0 "
+                        "(Windows NT 10.0; Win64; x64) "
+                        "AppleWebKit/537.36 "
+                        "(KHTML, like Gecko) "
+                        "Chrome/131.0 Safari/537.36"
+                    )
+                }
+            )
+
+            response.raise_for_status()
+
+            soup = BeautifulSoup(
+                response.text,
+                "html.parser"
+            )
+
+            for element in soup(
+                ["script", "style", "noscript"]
+            ):
+                element.decompose()
+
+            extracted_text = soup.get_text(
+                separator="\n",
+                strip=True
+            )
+
+            if extracted_text.strip():
+                st.success(
+                    f"🌐 Source retrieved — "
+                    f"{len(extracted_text)} characters"
+                )
+
+                with st.expander(
+                    "📄 Preview retrieved source"
+                ):
+                    st.text(
+                        extracted_text[:3000]
+                    )
+            else:
+                st.warning(
+                    "⚠️ URL retrieved, but no readable text was found."
+                )
+
+        except Exception as e:
+            st.warning(
+                f"⚠️ Could not retrieve source: {e}"
+            )
+            
 # =========================================================
 # ANALYZE
 # =========================================================
