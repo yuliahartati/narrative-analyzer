@@ -86,7 +86,20 @@ text_input = st.text_area(
     placeholder="Paste an article, post, statement, opinion, or other text here..."
 )
 
+# Detect URLs in pasted text
+detected_urls = re.findall(
+    r'https?://[^\s<>"\']+',
+    text_input
+)
 
+if detected_urls:
+    st.info(
+        f"🔗 {len(detected_urls)} URL detected"
+    )
+
+    for url in detected_urls:
+        st.caption(f"• {url}")
+        
 # =========================================================
 # ANALYZE
 # =========================================================
