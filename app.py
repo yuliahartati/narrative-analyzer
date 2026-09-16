@@ -102,11 +102,8 @@ if detected_urls:
 
     for url in detected_urls:
         st.caption(f"• {url}")
-        
-        )
-        
-                    
-          try:
+
+        try:
             response = requests.get(
                 url,
                 timeout=15,
@@ -216,7 +213,7 @@ if detected_urls:
         except Exception as e:
             st.warning(
                 f"⚠️ Could not retrieve source: {e}"
-            )          
+            )
             
 # =========================================================
 # ANALYZE
