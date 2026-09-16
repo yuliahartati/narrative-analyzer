@@ -170,9 +170,24 @@ if detected_urls:
                     strip=True
                 )
 
-                if text:
-                    paragraph_texts.append(text)
+                if not text:
+                    continue
 
+                noise_patterns = [
+                    "SCROLL TO CONTINUE WITH CONTENT",
+                    "Saksikan Live DetikPagi:",
+                    "Anda menyukai artikel ini",
+                    "Artikel disimpan"
+                ]
+
+                if any(
+                    noise.lower() in text.lower()
+                    for noise in noise_patterns
+                ):
+                    continue
+
+                paragraph_texts.append(text)
+  
             extracted_text = "\n\n".join(
                 paragraph_texts
             )
