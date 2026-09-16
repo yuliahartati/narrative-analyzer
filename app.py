@@ -1,7 +1,11 @@
 import io
 import json
+import re
+import requests
+
 import streamlit as st
 
+from bs4 import BeautifulSoup
 from openai import OpenAI
 from docx import Document
 from pypdf import PdfReader
