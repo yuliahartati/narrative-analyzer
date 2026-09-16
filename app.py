@@ -103,7 +103,11 @@ if detected_urls:
     for url in detected_urls:
         st.caption(f"• {url}")
 
-        try:
+        
+        )
+        
+                    
+          try:
             response = requests.get(
                 url,
                 timeout=15,
@@ -120,74 +124,79 @@ if detected_urls:
 
             response.raise_for_status()
 
+            soup = BeautifulSoup(
+                response.text,
+                "html.parser"
+            )
+
             # Clean page structure
-for element in soup(
-    [
-        "script",
-        "style",
-        "noscript",
-        "nav",
-        "header",
-        "footer",
-        "aside",
-        "form"
-    ]
-):
-    element.decompose()
+            for element in soup(
+                [
+                    "script",
+                    "style",
+                    "noscript",
+                    "nav",
+                    "header",
+                    "footer",
+                    "aside",
+                    "form"
+                ]
+            ):
+                element.decompose()
 
-# Try to identify the main article content
-article = soup.find("article")
+            # Try to identify the main article content
+            article = soup.find("article")
 
-if not article:
-    article = soup.find("main")
+            if not article:
+                article = soup.find("main")
 
-if not article:
-    article = soup.find(
-        "div",
-        class_=lambda value: value and (
-            "detail" in " ".join(value)
-            or "article" in " ".join(value)
-            or "content" in " ".join(value)
-        )
-    )
+            if not article:
+                article = soup.find(
+                    "div",
+                    class_=lambda value: value and (
+                        "detail" in " ".join(value)
+                        or "article" in " ".join(value)
+                        or "content" in " ".join(value)
+                    )
+                )
 
-# Extract paragraph text
-if article:
-    paragraphs = article.find_all("p")
-else:
-    paragraphs = soup.find_all("p")
+            # Extract paragraph text
+            if article:
+                paragraphs = article.find_all("p")
+            else:
+                paragraphs = soup.find_all("p")
 
-paragraph_texts = []
+            paragraph_texts = []
 
-for paragraph in paragraphs:
-    text = paragraph.get_text(
-        " ",
-        strip=True
-    )
+            for paragraph in paragraphs:
+                text = paragraph.get_text(
+                    " ",
+                    strip=True
+                )
 
-    if text:
-        paragraph_texts.append(text)
+                if text:
+                    paragraph_texts.append(text)
 
-extracted_text = "\n\n".join(
-    paragraph_texts
-)
+            extracted_text = "\n\n".join(
+                paragraph_texts
+            )
 
-# Include article title when available
-title = soup.find("h1")
+            # Include article title when available
+            title = soup.find("h1")
 
-if title:
-    title_text = title.get_text(
-        " ",
-        strip=True
-    )
+            if title:
+                title_text = title.get_text(
+                    " ",
+                    strip=True
+                )
 
-    if title_text:
-        extracted_text = (
-            title_text
-            + "\n\n"
-            + extracted_text
-        )
-        
+                if title_text:
+                    extracted_text = (
+                        title_text
+                        + "\n\n"
+                        + extracted_text
+                    )
+
             if extracted_text.strip():
                 st.success(
                     f"🌐 Source retrieved — "
@@ -208,7 +217,7 @@ if title:
         except Exception as e:
             st.warning(
                 f"⚠️ Could not retrieve source: {e}"
-            )
+            )          
             
 # =========================================================
 # ANALYZE
